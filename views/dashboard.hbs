@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="pt-nr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="icon" type="image/png"
+        href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAHElEQVR42mNkYPj/fwYgYGBg+P///xcSAwMAgmgC/QYJ3CYAAAAASUVORK5CYII=">
+
+
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg bg-light navbar-light">
+        <div class="container-fluid">
+            <span id="welcomeMessage" class="navbar-text">Bem-vindo usuario</span>
+            <button id="logoutButton" class="btn btn-outline-danger">Sair</button>
+        </div>
+    </nav>
+    <div class="container vh-100 d-flex justify-content-center align-items-center flex-column">
+        <h1>PAINEL DE TAREFAS</h1>
+        <ul class="mt-4 container-fluid">
+            {{#each data}}
+            <li class="row mt-2">
+                <div class="col-4">
+                    <p>{{this.title}}</p>
+                </div>
+                <div class="col-4">
+                    <p>{{this.description}}</p>
+                </div>
+                <div class="col-4">
+                    {{#if this.completed}}
+                    <button class="btn btn-success" disabled>CONCLUIDA</button>
+                    {{else}}
+                    <button class="btn btn-primary" onclick="concluirTarefa({{this.id}} )">FINALIZAR</button>
+                    <button class="btn btn-danger" onclick="excluirTarefa({{this.id}})">EXCLUIR</button>
+                    <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editModal"
+                        data-title="{{this.title}}" data-description="{{this.description}}" data-id="{{this.id}}">
+                        EDITAR
+                    </button>
+
+                    {{/if}}
+                </div>
+
+            </li>
+
+            {{/each}}
+        </ul>
+
+        <!-- Botão para Abrir o Modal -->
+        <div class="container text-center mt-5">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
+                CRIAR TAREFA
+            </button>
+        </div>
+
+        <!-- Modal CREATE -->
+        <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">CRIAÇÃO DE TAREFA</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Formulário -->
+                        <form id="createFormTask">
+                            <div class="mb-3">
+                                <label for="tittle" class="form-label">Título</label>
+                                <input type="text" class="form-control" id="tittle" name="tittle"
+                                    placeholder="Digite o título" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Descrição</label>
+                                <textarea class="form-control" id="description" name="description" rows="3"
+                                    placeholder="Digite a descrição" required></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" form="createFormTask">Salvar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{!-- MODAL EDIÇÃO --}}
+        <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editModalLabel">EDIÇÃO DE TAREFA</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Formulário -->
+                        <form id="editFormTask">
+                            <input type="hidden" id="editId" name="id">
+                            <div class="mb-3">
+                                <label for="editTittle" class="form-label">Título</label>
+                                <input type="text" class="form-control" id="editTittle" name="tittle"
+                                    placeholder="Digite o título" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editDescription" class="form-label">Descrição</label>
+                                <textarea class="form-control" id="editDescription" name="description" rows="3"
+                                    placeholder="Digite a descrição" required></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" form="editFormTask">EDITAR</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+    </div>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        window.onload = async function () {
+            const token = localStorage.getItem('token');
+
+
+            if (!token) {
+                alert('Token não encontrado. Redirecionando para login.');
+                window.location.href = '/login';
+
+            }
+
+            const res = await fetch('/verifyToken', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+
+            })
+
+            if (!res.ok) {
+                const error = await res.json();
+                alert(`Erro: ${error.error}. Estaremos redirecionando para login`)
+                window.location.href = '/login';
+            }
+        }
+
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (user) {
+            document.getElementById('welcomeMessage').textContent = `Bem-vindo, ${user.nome}`
+        }
+
+        document.getElementById('logoutButton').addEventListener('click', function logout() {
+            localStorage.removeItem('token')
+            localStorage.removeItem('user')
+            alert('Você será redirecionado para a página de login')
+            setTimeout(() => {
+                window.location.href = '/login'
+            }, 1000)
+        })
+        async function concluirTarefa(id) {
+            const token = localStorage.getItem('token');
+
+            const response = await fetch(`http://localhost:3000/tasks/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+
+            })
+
+            if (!response.ok) {
+                const error = await response.json()
+                alert(`ERRO: ${error.error}`)
+                return
+            }
+
+            const data = await response.json()
+
+            alert(`${data.success}`);
+
+            window.location.reload()
+
+        }
+
+        async function excluirTarefa(id) {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`http://localhost:3000/tasks/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+
+            })
+
+            if (!response.ok) {
+                const error = await response.json()
+                console.log(error)
+                alert(`ERRO: ${error.error}`)
+                return
+            }
+
+            const data = await response.json()
+
+            alert(`${data.success}`);
+
+            window.location.reload()
+        }
+
+        document.getElementById('createFormTask').addEventListener('submit', createTask)
+
+        async function createTask(event) {
+            event.preventDefault();
+
+            const tittle = document.getElementById('tittle').value
+            const description = document.getElementById('description').value
+            const form = document.getElementById('createFormTask')
+
+            const token = localStorage.getItem('token');
+
+            const response = await fetch('http://localhost:3000/tasks', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    tittle: tittle,
+                    description: description
+                })
+
+
+            })
+
+            if (!response.ok) {
+                const error = await response.json()
+                alert(`ERRO: ${error.error}`)
+                return
+            }
+
+            const data = await response.json()
+
+            alert(`${data.success}`);
+            form.reset()
+            window.location.reload()
+        }
+
+        const editModel = document.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget
+
+            const tittle = button.getAttribute('data-title');
+            const description = button.getAttribute('data-description');
+            const id = button.getAttribute('data-id');
+
+            console.log(id)
+
+            document.getElementById('editTittle').value = tittle;
+            document.getElementById('editDescription').value = description;
+            document.getElementById('editId').value = id
+        })
+
+        async function editTask(event) {
+            event.preventDefault();
+            const id = document.getElementById('editId').value
+            const tittle = document.getElementById('editTittle').value
+            const description = document.getElementById('editDescription').value
+            const formEdit = document.getElementById('editFormTask')
+
+            const token = localStorage.getItem('token');
+
+            const response = await fetch(`http://localhost:3000/tasks/${id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    tittle,
+                    description
+                })
+            })
+
+            if (!response.ok) {
+                const error = await response.json()
+                alert(`ERRO: ${error.error}`)
+                return
+            }
+
+            const data = await response.json()
+
+            alert(`${data.success}`);
+            formEdit.reset()
+            window.location.reload();
+
+        }
+
+
+
+        document.getElementById('editFormTask').addEventListener('submit', editTask)
+    </script>
+</body>
+
+</html>

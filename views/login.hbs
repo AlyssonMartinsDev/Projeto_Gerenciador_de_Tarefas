@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <title>Manager Tasks</title>
+</head>
+
+<body>
+    
+    <div class="container full-height flex-column">
+        <div class="card p-4 text-white card-login">
+            <h1>Gerenciador de Tarefas</h1>
+            <form class="d-flex flex-column justify-content-center" id="loginForm">
+                <!-- Campo de E-mail -->
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+
+                <!-- Campo de Senha -->
+                <div class="mb-3">
+                    <label for="password" class="form-label">Senha</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+                <div class="redirect p-2">
+                    <p>Não possui uma conta? <a href="/register" class="text-white">Registre-se agora </a></p>
+                </div>
+                <div class="error">
+                    <p id="errorMessage" class="text-danger"></p>
+                </div>
+
+                <!-- Botão de Enviar -->
+                <div class="d-flex align-items-center justify-content-center">
+                    <button type="submit" class="btn btn-primary" style="padding: 0.5rem 4rem ;">Entrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/loginScript.js"></script>
+</body>
+
+</html>

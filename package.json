@@ -1,0 +1,27 @@
+{
+  "name": "projeto_gerenciador_de_tarefas",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js",
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "Alysson Martins",
+  "license": "ISC",
+  "description": "Projeto em NodeJs, Express, handlebars",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "bootstrap": "^5.3.3",
+    "express": "^4.21.1",
+    "handlebars": "^4.7.8",
+    "hbs": "^4.2.0",
+    "jsonwebtoken": "^9.0.2",
+    "open": "^10.1.0",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}

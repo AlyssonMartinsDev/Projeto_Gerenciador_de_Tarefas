@@ -1,0 +1,16 @@
+/* Esse CSS garante que o container ocupe 100% da altura da viewport */
+.full-height {
+    min-height: 100vh;
+    /* 100% da altura da viewport */
+    display: flex;
+    align-items: center;
+    /* Centraliza o conteúdo verticalmente */
+    justify-content: center;
+    /* Centraliza o conteúdo horizontalmente */
+}
+
+/* CARD LOGIN */
+.card-login {
+    border-radius: 1.5rem;
+    background-color: black;
+}
